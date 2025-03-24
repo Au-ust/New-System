@@ -11,7 +11,7 @@ import Nopermission from "../sandbox/nopermission/Nopermission";
 import { theme, Layout, ConfigProvider } from "antd";
 
 //引入自己写的css
-//import "./NewSandbox.css";
+import "./NewSandbox.css";
 //解构Layout
 const { Content } = Layout;
 
