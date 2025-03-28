@@ -330,7 +330,7 @@
       "id": 2,
       "title": "用户管理",
       "key": "/user-manage",
-      "pagepermisson": 0,
+      "pagepermisson": 1,
       "grade": 1
     },
     {
