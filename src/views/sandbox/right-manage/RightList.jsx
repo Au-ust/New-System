@@ -105,9 +105,9 @@ function RightList() {
                 return <div>
                     <ReachableContext.Provider value="Light">
                         <Space>
-                            <Button danger type="primary" shape="circle" icon={<DeleteOutlined />} onClick={async () => {
+                            <Button danger type="primary" shape="circle" icon={<DeleteOutlined />} onClick={() => {
                             // 动态生成config
-                            const confirmed = await modal.confirm(createConfig(item))
+                            const confirmed = modal.confirm(createConfig(item))
                             console.log('Confirmed: ', confirmed);
                         }} />
                         </Space>

@@ -4,7 +4,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { DownOutlined} from '@ant-design/icons';
 import { UserOutlined } from '@ant-design/icons';
-
+import avatarImg from '../../Avatar.jpg'
 //从Layout组件中解构Header组件
 const { Header} = Layout;
 function TopHeader() {
@@ -62,7 +62,7 @@ function TopHeader() {
                     <a onClick={(e) => e.preventDefault()}>
                         <Space>
                     {/* 插槽的形式,hover用户头像图标显示下DownOutlined*/}
-                        <Avatar size="large" icon={<UserOutlined />} />
+                         <Avatar src={<img src={avatarImg} alt="avatar" />} />
                         <DownOutlined />
                     </Space>
                     </a>
