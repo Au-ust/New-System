@@ -9,7 +9,8 @@ import { Navigate } from "react-router-dom";
 import Nopermission from "../sandbox/nopermission/Nopermission";
 //引入antd
 import { theme, Layout, ConfigProvider } from "antd";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 //引入自己写的css
 import "./NewSandbox.css";
 //解构Layout
@@ -19,11 +20,11 @@ function NewSandbox() {
 //解构theme
     const { token } = theme.useToken(); // 获取主题 token
     const { colorBgContainer, borderRadiusLG } = token;
-
+    
     return (
        <ConfigProvider> <Layout>
             {/* 侧边栏 */}
-            <SideMenu></SideMenu>
+            <SideMenu />
             <Layout>
                 {/* 顶部栏 */}
                 <TopHeader></TopHeader>

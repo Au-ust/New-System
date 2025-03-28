@@ -1,8 +1,8 @@
 import React,{useState,createContext} from 'react';
-import { Table ,Tag,Button,Modal,Space} from 'antd';
+import { Table ,Tag,Button,Modal,Space,Popover,Switch} from 'antd';
 import { useEffect } from 'react';
 import axios from 'axios';
-import { DeleteOutlined,EditOutlined} from '@ant-design/icons';
+import { DeleteOutlined,EditOutlined, StopOutlined } from '@ant-design/icons';
 function RightList() {
     const ReachableContext = createContext(null);
     const UnreachableContext = createContext(null);
@@ -48,6 +48,24 @@ function RightList() {
         }
         
     }
+    //定义编辑方法
+    const switchMethod = (item) => {
+        console.log('切换权限:', item);
+        item.pagepermisson = item.pagepermisson === 1 ? 0 : 1
+        //改变数据
+        setdataSource([...dataSource])
+        //同步后端
+        if (item.grade === 1) {
+            axios.patch(`http://localhost:3000/rights/${item.id}`, {
+                pagepermisson: item.pagepermisson
+            })
+        } else {
+            axios.patch(`http://localhost:3000/children/${item.id}`, {
+                pagepermisson: item.pagepermisson
+            })
+        }
+    }
+
     const [dataSource, setdataSource] = useState([])
     const [modal, contextHolder] = Modal.useModal();
     //获取数据
@@ -58,6 +76,8 @@ function RightList() {
            setdataSource(res.data)
        })
     }, [])
+   
+
 
     const columns = [
     //在定义表格的列的地方进行样式渲染
@@ -93,12 +113,28 @@ function RightList() {
                         </Space>
                         
                     </ReachableContext.Provider>
-                    <Button type="primary" shape="circle" icon={<EditOutlined />}  />
+                    <Popover content={(
+                        <div>
+                            <p>页面配置项</p>
+                            <Switch checked={item.pagepermisson} onChange={() => switchMethod(item)} />
+                        </div>
+                    )} title="Title" trigger={item.pagepermisson === undefined ? '' : 'click'}>
+                        {/* 如果pagepermisson不为1，就显示编辑按钮不可用*/}
+                       <Button
+                        type="primary"
+                        shape="circle"
+                        icon={item.pagepermisson === undefined ? <StopOutlined /> : <EditOutlined />}
+                        disabled={item.pagepermisson === undefined}
+                    />
+                    </Popover>
+                   
                 </div>
             }
         },
     ]
-  
+    
+    
+ 
     return (
         <div>
             {/* contextHolder 必须放在 return 里 */}

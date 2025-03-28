@@ -18,7 +18,7 @@ import './index.css';
 import axios from "axios";
 //解构Layout
 const { Header, Content, Sider } = Layout;
-
+//接收RightList的dataSource
 function SideMenu() {
   // 图标映射表（根据需要自行扩展）
 const iconMap = {
