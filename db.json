@@ -10,31 +10,33 @@
       "roleId": 1
     },
     {
-      "username": "铁锤",
+      "username": "荷叶饭",
       "password": "123",
       "roleState": true,
       "default": false,
       "region": "亚洲",
       "roleId": 2,
-      "id": 2
+      "id": 2,
+      "confirmpassword": "123"
     },
     {
-      "username": "钢蛋",
+      "username": "励志轩最喜欢的哪吒",
       "password": "123",
-      "roleState": true,
+      "roleState": false,
       "default": false,
       "region": "南极洲",
       "roleId": 2,
       "id": 3
     },
     {
-      "username": "诸葛山珍",
+      "username": "奶龙尸块",
       "password": "123",
       "roleState": true,
       "default": false,
-      "region": "",
-      "roleId": 1,
-      "id": 4
+      "region": "非洲",
+      "roleId": 3,
+      "id": 4,
+      "confirmpassword": "123"
     },
     {
       "username": "西门吹灯",
@@ -71,6 +73,14 @@
       "region": "亚洲",
       "roleId": 3,
       "id": 8
+    },
+    {
+      "username": "啊啊啊",
+      "password": "aaa",
+      "confirmpassword": "aaa",
+      "roleId": 2,
+      "region": "欧洲",
+      "id": 9
     }
   ],
   "roles": [
