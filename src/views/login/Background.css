@@ -1,0 +1,46 @@
+.glass-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.glass-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+/* 主毛玻璃层 */
+.glass-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(var(--blur-strength));
+  -webkit-backdrop-filter: blur(var(--blur-strength));
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 2;
+  pointer-events: none;
+  /* 关键：mask 让圆形区域透明（不模糊） */
+  mask: radial-gradient(
+    circle var(--clear-size) at var(--mouse-x, -9999px) var(--mouse-y, -9999px),
+    transparent 0%,
+    black 100%
+  );
+  
+  transition: mask 0.1s ease-out;
+}
+
+/* 内容插槽 - 显示在最上层 */
+.glass-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+}
+
+.glass-container:hover .glass-overlay::after {
+  opacity: 1;
+}

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import UserForm from '../../../components/sandbox/user-manage/UserForm'
 import { DeleteOutlined,EditOutlined, StopOutlined } from '@ant-design/icons';
+import { log } from 'three/tsl';
 function UserList() {
     const ReachableContext = createContext(null);
     const createConfig = (item) => {
@@ -39,12 +40,38 @@ function UserList() {
     const [form] = Form.useForm(); //创建antd的form实例
     
     const [updateform] = Form.useForm(); //创建antd的updateform实例
-    //列表的获取数据
-     useEffect(() => { 
-       axios.get('http://localhost:3000/users?_expand=role').then(res => {
-           setdataSource(res.data)
-       })
-    }, [])
+    const token = JSON.parse(localStorage.getItem("token")) || {};
+    const roleId = token.roleId; // 直接访问 token.roleId
+    const region = token.region || "";// 直接访问 token.region
+    const isSuperAdmin = roleId === 1; // 超级管理员
+    const isAdmin = roleId === 2;      // 区域管理员
+    const isEditor = roleId === 3;     // 编辑
+
+// 调试日志
+console.log("权限状态:", { roleId, region, isSuperAdmin, isAdmin, isEditor });
+
+// 根据权限过滤数据源
+useEffect(() => {
+  axios.get('http://localhost:3000/users?_expand=role').then(res => {
+    let filteredData = res.data;
+    
+    // 超级管理员：查看所有用户
+    if (isSuperAdmin) {
+      console.log("超级管理员看到全部数据", res.data);
+    } 
+    // 区域管理员：仅查看本区域用户
+    else if (isAdmin) {
+      filteredData = res.data.filter(item => item.region === region);
+      console.log("区域管理员过滤后数据", filteredData);
+    }
+    // 编辑：仅查看本区域用户
+    else if (isEditor) {
+      filteredData = res.data.filter(item => item.region === region);
+    }
+    
+    setdataSource(filteredData);
+  });
+}, [isAdmin, isEditor, region, isSuperAdmin]);
    //异步操作确保操作顺序
    const handleChange = async (item) => {
         try {
@@ -69,18 +96,26 @@ function UserList() {
                 content: error.message
             });
         }
-    };
-    const handleUpdate =(item) => {
-        setCurrentEditUser(item); // 存储当前编辑的用户
-        setisUpdate(true)//打开表单
-        updateform.setFieldsValue({
+    }
+    //编辑的函数
+    const handleUpdate = (item) => {
+        setCurrentEditUser(item);
+        setisUpdate(true);
+        
+        // 清空表单后再设置新值（避免残留状态）
+        updateform.resetFields();
+        
+        // 确保在模态框渲染后设置值
+        setTimeout(() => {
+            updateform.setFieldsValue({
             username: item.username,
             password: item.password,
-            confirmpassword:item.password,
-            region: item.region,
+            confirmpassword: item.password,
+            region: item.region, // 确保使用原始值
             roleId: item.role?.id
-        });
-    }
+            });
+        }, 0);
+    };
 
     const columns = [
     //在定义表格的列的地方进行样式渲染
@@ -253,18 +288,25 @@ function UserList() {
                 }}
                 onOk={updateFormOk} // 绑定提交处理函数
                 destroyOnClose
+                forceRender // 关键属性：强制渲染DOM
                 modalRender={(dom) => (
                 <Form
-                        // 垂直布局
-                        layout="vertical"
-                        form={updateform} // 将form实例传递给Form组件
+                    // 垂直布局
+                    layout="vertical"
+                    form={updateform} // 将form实例传递给Form组件
                 >
                     {dom}
             </Form>
         )}
       >
-       <UserForm regionList={regionList} roleList={roleList} form={updateform}></UserForm>
-      </Modal>
+                <UserForm
+                    regionList={regionList}
+                    roleList={roleList}
+                    form={updateform}
+                    initialValues={{
+                        region: isAdmin ? region : undefined // 区域管理员默认选择自己的区域
+                    }}></UserForm>
+            </Modal>
       </div>
     )
 }

@@ -1,16 +1,29 @@
 import { Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 
-const UserForm = ({ regionList, roleList, form, }) => {
+const UserForm = ({ regionList, roleList, form, initialValues }) => {
     const SUPER_ADMIN_ROLE_ID = 1; // 超级管理员角色ID
     const [isDisabled, setIsDisabled] = useState(false); // 控制区域选择框是否禁用
 
-  //监听 roleId 变化，自动更新 isDisabled 状态
-  //这样可以确保 roleId 变化时，isDisabled 状态始终同步，避免 setIsDisabled 在 onChange 里可能出现的异步更新问题
+   //监听 roleId 变化，自动更新 isDisabled 状态
+   //这样可以确保 roleId 变化时，isDisabled 状态始终同步，避免 setIsDisabled 在 onChange 里可能出现的异步更新问题
     useEffect(() => {
         const roleId = form.getFieldValue("roleId");
         setIsDisabled(roleId === SUPER_ADMIN_ROLE_ID);
-    }, [form]);
+    }, [form])
+     // 设置初始值
+    useEffect(() => {
+        if (initialValues) {
+            form.setFieldsValue(initialValues);
+        }
+    }, [form, initialValues]);
+    const token = JSON.parse(localStorage.getItem("token")) || {};
+    const roleId = token.roleId; // 直接访问 token.roleId
+    const region = token.region;
+    const isSuperAdmin = roleId === 1; // 超级管理员
+    const isAdmin = roleId === 2;      // 区域管理员
+    const isEditor = roleId === 3;     // 编辑
+
 
     return (
         <>
@@ -60,17 +73,33 @@ const UserForm = ({ regionList, roleList, form, }) => {
                 <Select
                     onChange={(value) => {
                         if (value === SUPER_ADMIN_ROLE_ID) {
-                            setIsDisabled(true); // 如果选择了超级管理员，禁用区域选择框
-                            form.setFieldsValue({ region: "" }); // 清空区域字段
+                            setIsDisabled(true);
+                            form.setFieldsValue({ region: "" });
                         } else {
-                            setIsDisabled(false); // 其他角色允许选择区域
+                            setIsDisabled(false);
                         }
                     }}
                     style={{ width: 120 }}
-                    options={roleList?.map((item) => ({
-                        value: item.id,
-                        label: item.roleName,
-                    }))}
+                    options={roleList
+                        ?.filter(item => {
+                            // 超级管理员可以看到所有角色
+                            if (isSuperAdmin) return true;
+                            
+                            // 区域管理员可以看到区域管理员(2)和编辑(3)
+                            if (isAdmin) return item.id >= 2 && item.id <= 3;
+                            
+                            // 编辑只能看到编辑(3)
+                            if (isEditor) return item.id === 3;
+                            
+                            // 默认情况下不显示任何角色
+                            return false;
+                        })
+                        .map((item) => ({
+                            value: item.id,
+                            label: item.roleName,
+                        }))}
+                    //仅超级管理员和区域管理员可修改
+                     disabled={!isSuperAdmin && roleId !== 2} // 仅超级管理员和区域管理员可修改
                 />
             </Form.Item>
 
@@ -81,11 +110,18 @@ const UserForm = ({ regionList, roleList, form, }) => {
                 rules={isDisabled ? [] : [{ required: true, message: "请选择区域！" }]}
             >
                 <Select
-                    disabled={isDisabled} // 根据 isDisabled 状态决定是否禁用
+                    disabled={isDisabled || (!isSuperAdmin && roleId !== 2)} // 根据 isDisabled 状态决定是否禁用
                     style={{ width: 120 }}
-                    options={regionList?.map((item) => ({
-                        value: item.value,
-                        label: item.title,
+                     options={regionList
+                        ?.filter(item => 
+                            isAdmin 
+                            ? item.value === region // 区域管理员只能选择自己所在的区域
+                                : true // 其他用户可以看到所有区域
+
+                    )
+                        .map((item) => ({
+                            value: item.value,
+                            label: item.title,
                     }))}
                 />
             </Form.Item>

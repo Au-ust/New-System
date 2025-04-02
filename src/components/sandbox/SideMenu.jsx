@@ -35,10 +35,15 @@ const iconMap = {
   const pathname = useLocation().pathname;
   //截取一级路由
   const openKeys = [pathname.split("/").slice(0, 2).join("/")];
-
+  //获取用户数据
+  
+  //获取登录的用户数据
+  const token = JSON.parse(localStorage.getItem("token")) || {};
+  const rights = token?.role?.rights || [];
+   
 
   const checkPermission = (item) => { 
-    if (item.pagepermisson === 1) { 
+    if (item.pagepermisson === 1&&rights.includes(item.key)) { 
       return true; 
     } 
     if (item.children) { 
