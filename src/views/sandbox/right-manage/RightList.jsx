@@ -28,7 +28,7 @@ function RightList() {
         console.log(item)
         if (item.grade === 1) {
             //同步后端+从数据里删除,用filter方法，不改变原数组，返回一个新数组,通过item.id筛选
-        axios.delete(`http://localhost:3000/rights/${item.id}`).then(() => {
+        axios.delete(`/rights/${item.id}`).then(() => {
             console.log('删除成功');
             // 请求成功后，更新前端数据
             setdataSource(dataSource.filter(data=>data.id!==item.id));
@@ -44,7 +44,7 @@ function RightList() {
             //此时进行setSourceData,使用展开运算符
             setdataSource([...dataSource])
             //同步后端
-            axios.delete(`http://localhost:3000/children/${item.id}`)
+            axios.delete(`/children/${item.id}`)
         }
         
     }
@@ -56,11 +56,11 @@ function RightList() {
         setdataSource([...dataSource])
         //同步后端
         if (item.grade === 1) {
-            axios.patch(`http://localhost:3000/rights/${item.id}`, {
+            axios.patch(`/rights/${item.id}`, {
                 pagepermisson: item.pagepermisson
             })
         } else {
-            axios.patch(`http://localhost:3000/children/${item.id}`, {
+            axios.patch(`/children/${item.id}`, {
                 pagepermisson: item.pagepermisson
             })
         }
@@ -70,7 +70,7 @@ function RightList() {
     const [modal, contextHolder] = Modal.useModal();
     //获取数据
     useEffect(() => { 
-       axios.get('http://localhost:3000/rights?_embed=children').then(res => {
+       axios.get('/rights?_embed=children').then(res => {
            //修改json数据children长度为0的children为空
            res.data.map(item => { item.children.length <= 0? item.children = "" :item})
            setdataSource(res.data)

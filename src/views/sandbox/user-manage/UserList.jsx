@@ -28,7 +28,7 @@ function UserList() {
     const deletMethod = (item) => {
         console.log(item)
         setdataSource(dataSource.filter(data=>data.id!==item.id))
-        axios.delete(`http://localhost:3000/users/${item.id}`)
+        axios.delete(`/users/${item.id}`)
     }
     
     const [dataSource, setdataSource] = useState([])
@@ -52,7 +52,7 @@ console.log("权限状态:", { roleId, region, isSuperAdmin, isAdmin, isEditor }
 
 // 根据权限过滤数据源
 useEffect(() => {
-  axios.get('http://localhost:3000/users?_expand=role').then(res => {
+  axios.get('/users?_expand=role').then(res => {
     let filteredData = res.data;
     
     // 超级管理员：查看所有用户
@@ -78,7 +78,7 @@ useEffect(() => {
             const newRoleState = !item.roleState;
             
             // 更新后端
-            const response = await axios.patch(`http://localhost:3000/users/${item.id}`, {
+            const response = await axios.patch(`/users/${item.id}`, {
                 roleState: newRoleState
             });
             
@@ -188,14 +188,14 @@ useEffect(() => {
  
     //获取区域数据
     useEffect(() => { 
-       axios.get('http://localhost:3000/regions').then(res => {
+       axios.get('/regions').then(res => {
            setregionList(res.data)
        })
     }, [])
     
     //获取角色数据
     useEffect(() => { 
-       axios.get('http://localhost:3000/roles').then(res => {
+       axios.get('/roles').then(res => {
            setroleList(res.data)
        })
     }, [])
@@ -205,13 +205,13 @@ useEffect(() => {
             .then(values => {
                 console.log('表单数据:', values);
                 // 在这里提交表单数据到后端
-                axios.post('http://localhost:3000/users', values)
+                axios.post('/users', values)
                     .then(res => {
                         console.log('用户添加成功:', res.data);
                         setOpen(false);
                         form.resetFields(); // 重置表单
                         // 刷新用户列表
-                        axios.get('http://localhost:3000/users?_expand=role').then(res => {
+                        axios.get('/users?_expand=role').then(res => {
                             setdataSource(res.data);
                         });
                     })
@@ -233,7 +233,7 @@ useEffect(() => {
         console.log('更新的用户信息:', values);
 
         // 发送更新请求
-        const response = await axios.patch(`http://localhost:3000/users/${currentEditUser.id}`, values);
+        const response = await axios.patch(`/users/${currentEditUser.id}`, values);
 
         if (response.status === 200) {
             setdataSource(prev => prev.map(user => 
