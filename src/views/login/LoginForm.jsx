@@ -10,7 +10,7 @@ function LoginForm() {
     const navigate = useNavigate();
     const onFinish = (values) => {
       console.log('Success:', values);
-      axios.get(`/users?username=${values.username}&password=${values.password}&roleType=true&_expand=role`)
+      axios.get(`http://localhost:3000/users?username=${values.username}&password=${values.password}&roleType=true&_expand=role`)
         .then(res => {
             console.log(res.data)
             if (res.data.length === 0) {

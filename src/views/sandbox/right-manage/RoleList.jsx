@@ -32,7 +32,7 @@ function RoleList() {
     const deletMethod = (item) => {
         console.log(item)
             //同步后端+从数据里删除,用filter方法，不改变原数组，返回一个新数组,通过item.id筛选
-        axios.delete(`/roles/${item.id}`).then(() => {
+        axios.delete(`http://localhost:3000/roles/${item.id}`).then(() => {
             console.log('删除成功');
             // 请求成功后，更新前端数据
             setdataSource(dataSource.filter(data=>data.id!==item.id));
@@ -51,7 +51,7 @@ function RoleList() {
     const handleOk = async () => {
         try {
             // 先更新后端
-            await axios.patch(`/roles/${currentId}`, {
+            await axios.patch(`http://localhost:3000/roles/${currentId}`, {
                 rights: currentRights
             });
 
@@ -128,12 +128,12 @@ function RoleList() {
 
     useEffect(() => {
          // 获取角色列表
-        axios.get('/roles').then(res => {
+        axios.get('http://localhost:3000/roles').then(res => {
             setdataSource(res.data);
         });
 
         // 获取权限列表
-        axios.get('/rights?_embed=children').then(res => {
+        axios.get('http://localhost:3000/rights?_embed=children').then(res => {
             //把获取到的数据转为需要的Tree格式
             const formattedData = res.data.map(item => ({
                 title: item.title,
