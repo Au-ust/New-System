@@ -42,7 +42,7 @@ function RightList() {
             //从第一级列表里把children删掉,此时dataSource已经被改变了
             list[0].children = list[0].children.filter(data => data.id !== item.id)
             //此时进行setSourceData,使用展开运算符
-            setdataSource([...dataSource])
+            setdataSource([...list])
             //同步后端
             axios.delete(`http://localhost:3000/children/${item.id}`)
         }

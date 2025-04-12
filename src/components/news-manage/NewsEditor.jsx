@@ -3,8 +3,9 @@ import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from 'draft-js';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from 'draftjs-to-html';
+import './NewsEditor.css'
 
-function NewsEditor({ getCurrentContent }) {  // ✅ 正确写法：只解构 prop，不调用
+function NewsEditor({ getCurrentContent }) {  //只解构 prop，不调用
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     
     return (

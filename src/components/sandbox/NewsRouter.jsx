@@ -14,6 +14,7 @@ import AuditList from "../../views/sandbox/audit-manage/AuditList";
 import Unpublished from "../../views/sandbox/publish-manage/Unpublished";
 import Published from "../../views/sandbox/publish-manage/Published";
 import Sunset from "../../views/sandbox/publish-manage/Sunset";
+import NewsPreview from "../../views/sandbox/news-manage/NewsPreview";
 import { useEffect, useState } from "react";
 import axios from "axios";
 //本地i的路由映射表，根据权限映射
@@ -27,6 +28,7 @@ const LocalRouterMap = {
     '/news-manage/add': <NewsAdd/>,
     '/news-manage/draft': <NewsDraft/>,
     '/news-manage/category':<NewsCategory/>,
+    '/news-manage/preview/:id':<NewsPreview/>,
     //审核
     '/audit-manage/audit': <Audit/>,
     '/audit-manage/list': <AuditList/>,
@@ -69,8 +71,8 @@ function NewsRouter() {
     return (
         <Routes>
             {
-                // 遍历路由表
-                userRoutes.map(item =><Route path={item.key} key={item.key} element={LocalRouterMap[item.key]} ></Route>)
+            // 遍历路由表
+            userRoutes.map(item =><Route path={item.key} key={item.key} element={LocalRouterMap[item.key]} ></Route>)
             }
             <Route path='/' element={<Navigate to='/home' />} />
             {/*404路由,把网速调慢可以看效果*/}

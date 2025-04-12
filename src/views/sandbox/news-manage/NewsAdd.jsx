@@ -23,6 +23,7 @@ function NewsAdd() {
     const [api, contextHolder] = notification.useNotification(); // 使用 notification API
     const navigate = useNavigate(); // 使用 useNavigate Hook
     const [notificationData, setNotificationData] = useState(null);
+    const User = JSON.parse(localStorage.getItem('token') || '{}');// 获取用户信息+空值检验
     const handleNext = () => {
         if (current === 0) {
             // 提交并验证表单,用form实例来验证
@@ -50,13 +51,16 @@ function NewsAdd() {
     }
     const handleSave = async (auditState) => { 
         //  console.log("handleSave 被调用了");
+        console.log('author:',localStorage.getItem('username'))
+        
         try {
             await  axios.post('http://localhost:3000/news', {
             ...formInfo,
             content: editorContent,
-            region: localStorage.getItem('region') ? localStorage.getItem('region') : '全球', // 获取地区
-            author: localStorage.getItem('username'), // 获取作者
-            roleId: localStorage.getItem('roleId'), // 获取角色ID
+            region: User.region?User.region: '全球', // 获取地区
+            author: User.username ,// 获取作者
+            roleId: User.roleId, // 获取角色ID
+            category: formInfo.categoryId, // 获取分类ID
             auditState: auditState, // 审核状态
             publishState: 0, // 发布状态
             createTime: Date.now(), // 创建时间
@@ -70,7 +74,7 @@ function NewsAdd() {
             placement: 'bottomRight',
         });
 
-        // ⏳ **延迟 500ms 再跳转，确保用户能看到通知**
+        //延迟 500ms 再跳转，确保用户能看到通知
         setTimeout(() => {
             navigate(auditState === 0 ? '/news-manage/draft' : '/audit-manage/list');
         }, 500);
