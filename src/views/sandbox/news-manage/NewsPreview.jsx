@@ -1,16 +1,17 @@
-import {Descriptions, Spin} from 'antd';
+import {Descriptions, Spin,Button} from 'antd';
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import DOMPurify from 'dompurify';
+import { LeftOutlined } from '@ant-design/icons';
 function NewsPreview() {
     const [newsInfo, setNewsInfo] = React.useState(null);
     const { id } = useParams(); // 直接解构出id
     useEffect(() => {
         axios.get(`http://localhost:3000/news/${id}?_expand=category&_expand=role`).then(res => {  
         console.log('获取新闻信息:', res.data);
-    setNewsInfo(res.data);
+        setNewsInfo(res.data);
     })
        
     }, [id]);
@@ -26,7 +27,8 @@ function NewsPreview() {
         1: '待发布',
         2: '已上线',
         3: '未下线'
-    }
+  }
+  const colorList=['black','orange','green','red']
 //动态生成item
 const items = newsInfo ? [
   {
@@ -54,8 +56,7 @@ const items = newsInfo ? [
     label: '审核状态',
     children: (
     <span style={{ 
-        color: newsInfo.auditState === 0 ? 'red' : 
-            newsInfo.auditState === 1 ? 'orange' : 'green'
+        color: colorList[newsInfo.auditState]
     }}>
       {auditMap[newsInfo.auditState]}
     </span>
@@ -66,8 +67,7 @@ const items = newsInfo ? [
     label: '发布状态',
       children: (
     <span style={{
-        color: newsInfo.publishState === 0 ? 'red' : 
-            newsInfo.publishState === 1 ? 'orange' : 'green'
+        color:colorList[newsInfo.publishState]
     }}>
       {publishMap[newsInfo.publishState]}   
     </span>
@@ -88,9 +88,11 @@ const items = newsInfo ? [
     label: '评论数量',
     children: 0, // 如果有评论字段你可以填上
   },
-] : [];
+  ] : [];
+  const navigate = useNavigate();//定义返回路由
     return (
-         <div>
+      <div>
+         <Button type="link" icon={<LeftOutlined />} onClick={() => navigate(-1)}>返回</Button>
             {!newsInfo ? (
                 <Spin />
             ) : (

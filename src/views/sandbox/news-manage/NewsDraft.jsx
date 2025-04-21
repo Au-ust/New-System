@@ -1,9 +1,10 @@
 import React,{useState} from 'react';
-import { Table ,Tag,Button,Modal,Space,} from 'antd';
+import { Table ,Button,Modal,Space, notification,} from 'antd';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 function NewsDraft() {
     const createConfig = (item) => {
         //声明confirm提示框的设置
@@ -29,27 +30,12 @@ function NewsDraft() {
             setdataSource([...list])
             //同步后端
             axios.delete(`http://localhost:3000/news/${item.id}`)
-        }
-    //定义编辑方法
-    const switchMethod = (item) => {
-        console.log('切换权限:', item);
-        item.pagepermisson = item.pagepermisson === 1 ? 0 : 1
-        //改变数据
-        setdataSource([...dataSource])
-        //同步后端
-        if (item.grade === 1) {
-            axios.patch(`http://localhost:3000/rights/${item.id}`, {
-                pagepermisson: item.pagepermisson
-            })
-        } else {
-            axios.patch(`http://localhost:3000/children/${item.id}`, {
-                pagepermisson: item.pagepermisson
-            })
-        }
     }
+    const navigate = useNavigate(); //使用useNavigate钩子
 
     const [dataSource, setdataSource] = useState([])
-    const [modal, contextHolder] = Modal.useModal();
+    const [modal, modalContextHolder] = Modal.useModal()
+    const [api, notificationContextHolder] = notification.useNotification()
     const {username}=JSON.parse(localStorage.getItem('token') || '{}')
     //获取数据
     useEffect(() => { 
@@ -58,8 +44,26 @@ function NewsDraft() {
            setdataSource(list)
        })
     }, [username])
-   
-
+    
+    const handleCheck = (id) => {
+        axios.patch(`http://localhost:3000/news/${id}`, {
+            auditState: 1 // 设置审核状态为 1（审核中）
+        }).then(res => {
+            console.log('审核状态更新成功:', res.data);
+            setdataSource(dataSource.filter(item => item.id !== id)); // 更新状态
+            api.success({
+            message: '通知',
+            description: '审核已提交，请等待管理员审核',
+            placement: 'bottomRight',
+            })
+            setTimeout(() => {
+            navigate('/audit-manage/list');
+            }, 1500)
+        }).catch(err => {
+            console.error('审核状态更新失败:', err);
+        }
+        )
+}
 
     const columns = [
     //在定义表格的列的地方进行样式渲染
@@ -98,12 +102,14 @@ function NewsDraft() {
                        <Button
                         type="primary"
                         shape="circle"
+                        onClick={() =>navigate(`/news-manage/update/${item.id}`)}
                         icon={<EditOutlined />}
                     />
                     <Button
                         type="primary"
                         shape="circle"
                         icon={<UploadOutlined />}
+                        onClick={() =>handleCheck(item.id)}
                     />
 
                    
@@ -117,7 +123,8 @@ function NewsDraft() {
     return (
         <div>
             {/* contextHolder 必须放在 return 里 */}
-            {contextHolder}
+            {modalContextHolder}
+            {notificationContextHolder}
             {/* pageSize设置每页显示的条目数 */}
             {/* 假设每条数据都有唯一id字段 */}
             <Table dataSource={dataSource} columns={columns} pagination={{pageSize:5}} rowKey={item=>item.id}  />

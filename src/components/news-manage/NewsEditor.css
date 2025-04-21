@@ -1,6 +1,18 @@
-.editorClassName {
-  min-height: 300px;
-  padding: 10px;
+/* NewsEditor.css */
+.wrapperClassName {
   border: 1px solid #ccc;
+  padding: 10px;
+  min-height: 300px;
+}
+
+.editorClassName {
+  min-height: 250px;
+  padding: 10px;
+  border: 1px solid #f1f1f1;
   background-color: #fff;
+}
+
+.toolbarClassName {
+  border: 1px solid #f1f1f1;
+  background-color: #f5f5f5;
 }

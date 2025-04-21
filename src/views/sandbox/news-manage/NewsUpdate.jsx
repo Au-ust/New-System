@@ -1,11 +1,12 @@
 import { Steps, Button, Input, Form, Select, message ,notification,} from 'antd';
 import React, { useEffect, useState } from 'react';
-import { EditOutlined, UploadOutlined, FormOutlined } from '@ant-design/icons';
+import { EditOutlined, UploadOutlined, FormOutlined ,LeftOutlined} from '@ant-design/icons';
 import style from './News.module.css';
 import NewEditor from '../../../components/news-manage/NewsEditor';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useParams} from 'react-router-dom';
 import 'antd/dist/reset.css';
+import { log } from 'three/tsl';
 
 const { Option } = Select;
 // 提取空内容判断函数
@@ -14,7 +15,7 @@ const isEditorEmpty = (content) => {
          content.replace(/<[^>]*>|&nbsp;/g, '').trim() === '' ||
          ['<p></p>', '<p><br></p>'].includes(content);
 };
-function NewsAdd() {
+function NewsUpdate() {
     const [current, setCurrent] = useState(0)//存储当前在第几步
     const [categoryList, setCategoryList] = useState([])//存储拉取的分类条目
     const [form] = Form.useForm(); // 使用 Form 的 hook
@@ -22,6 +23,7 @@ function NewsAdd() {
     const [editorContent, setEditorContent] = useState(''); // 用于存储文本编辑器内容
     const [api, contextHolder] = notification.useNotification(); // 使用 notification API
     const navigate = useNavigate(); // 使用 useNavigate Hook
+    const [notificationData, setNotificationData] = useState(null);
     const User = JSON.parse(localStorage.getItem('token') || '{}');// 获取用户信息+空值检验
     const handleNext = () => {
         if (current === 0) {
@@ -48,24 +50,18 @@ function NewsAdd() {
         labelCol: { span: 4 },
         wrapperCol: { span: 20 },
     }
+    
+    
+    const { id } = useParams(); // 获取路由参数
     const handleSave = async (auditState) => { 
         //  console.log("handleSave 被调用了");
         console.log('author:',localStorage.getItem('username'))
         
         try {
-            await  axios.post('http://localhost:3000/news', {
+            await  axios.patch(`http://localhost:3000/news/${id}`, {
             ...formInfo,
             content: editorContent,
-            region: User.region?User.region: '全球', // 获取地区
-            author: User.username ,// 获取作者
-            roleId: User.roleId, // 获取角色ID
-            category: formInfo.categoryId, // 获取分类ID
             auditState: auditState, // 审核状态
-            publishState: 0, // 发布状态
-            createTime: Date.now(), // 创建时间
-            star: 0, // 点赞数
-            view: 0,// 浏览量
-            // publishTime: 0, // 发布时间
         } ) 
            api.success({
             message: '操作成功',
@@ -87,17 +83,40 @@ function NewsAdd() {
     }
 };
 
-  
+    // 处理通知数据
+    useEffect(() => {
+        console.log('notificationData updated:', notificationData); // 添加这行
+        console.log('API:', api);
+        if (notificationData) {
+            const { type, ...rest } = notificationData; // 解构，去掉 type
+            api[type || 'info'](rest);
+            setNotificationData(null);
+}
+    }, [notificationData]);
+
     useEffect(() => {
         axios.get('http://localhost:3000/categories')
             .then(res => setCategoryList(res.data))
             .catch(err => console.error('获取分类失败:', err));
     }, []); // 添加空依赖数组，避免重复请求
-
+    //获取本来的数据
+    
+        useEffect(() => {
+            axios.get(`http://localhost:3000/news/${id}?_expand=category&_expand=role`).then(res => {
+                //把获取过来的信息填到表单中
+                    form.setFieldsValue({
+                        title: res.data.title,
+                        categoryId: res.data.categoryId,
+                    });
+                console.log('获取新闻信息:', res.data.content);
+                setEditorContent(res.data.content); // 设置编辑器内容
+            })
+    }, [id]); // 依赖项为 id，确保在 id 变化时重新获取数据
     return (
         <div>
             {contextHolder} {/* 必须添加 */}
-            <h2 className='news-title'>撰写新闻</h2>
+            <Button type="link" icon={<LeftOutlined />} onClick={() => navigate(-1)}>返回</Button>
+            <h2 className='news-title'>更新新闻</h2>
             <Steps
                 current={current} // 使用 current 状态控制步骤
                 items={[
@@ -160,13 +179,14 @@ function NewsAdd() {
                     </Form>
                 </div>
             </div>
-
             <div className={current === 1 ? '' : style.active}>
                 <NewEditor
                     getCurrentContent={(value) => {
-                    console.log('编辑器内容更新:', value) // 调试用
-                    setEditorContent(value)
+                        console.log('编辑器内容更新:', value) // 调试用
+                        setEditorContent(value)
                     }}
+                    
+                    content={editorContent} // 设置初始内容
                 />
             </div>
 
@@ -200,4 +220,4 @@ function NewsAdd() {
     );
 }
 
-export default NewsAdd;
+export default NewsUpdate;
