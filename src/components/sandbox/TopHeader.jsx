@@ -3,13 +3,17 @@ import { Layout, theme, Button,Dropdown,Space,Avatar,} from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { DownOutlined} from '@ant-design/icons';
-import { UserOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from "react-redux";
 import avatarImg from '../../Avatar.jpg'
+import { toggleCollapsed } from "../../redux/reducers/CollapsedReducer";
 import { useNavigate } from "react-router-dom";
 //从Layout组件中解构Header组件
-const { Header} = Layout;
+const { Header } = Layout;
+
 function TopHeader() {
-    const [collapsed, setCollapsed] = useState(false)
+  const collapsed = useSelector(state => state.collapsed.value);
+  const dispatch = useDispatch();
+    //const [collapsed, setCollapsed] = useState(false)//使用redux来管理侧边栏的折叠状态
     //定义changeCollapsed函数，用于展开/收起侧边栏,通过取反实现
     //这里不需要了，因为antd的Button组件已经封装好了
     // const changeCollapsed = () => {
@@ -70,16 +74,15 @@ function TopHeader() {
           }}
         >
           <Button
-            type="text"
-            //展开/收起侧边栏，本来要绑定onClick事件，结果发现antd的Button组件已经封装好了
-            icon={collapsed ? <MenuUnfoldOutlined  /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
-            />
+    type="text"
+    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+    onClick={() => dispatch(toggleCollapsed())}
+    style={{
+      fontSize: '16px',
+      width: 64,
+      height: 64,
+  }}
+/>
             {/* {让盒子浮动到右边} */}
             <div style={{ float: 'right', marginRight: '20px' }}> 
                 <span>

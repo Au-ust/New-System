@@ -74,8 +74,10 @@ function AuditList() {
             dataIndex: 'author',
         }, {
             title: '新闻分类',
-            dataIndex: 'categoryId',
-           
+            dataIndex: 'category',
+            render: (category) => {
+                return  <div>{category && category.title ? category.title : '无分类'}</div>;
+            }
         },{
             title: '审核状态',
             dataIndex: 'auditState',

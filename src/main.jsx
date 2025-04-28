@@ -2,7 +2,16 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { Provider } from 'react-redux';
+import {
+    store ,persistor
+} from './redux/store.jsx';
+import { PersistGate } from 'redux-persist/integration/react'//状态持久化
 // import './util/http.jsx'
 createRoot(document.getElementById('root')).render(
-    <App></App>
+    <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+        <App></App>
+         </PersistGate>
+    </Provider >
 )

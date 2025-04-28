@@ -5,31 +5,56 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Layout ,Menu} from "antd";
 //引入antd的图标组件
 import {
-  MailOutlined,
+  HomeOutlined ,
   AppstoreOutlined,
-  SettingOutlined,
   UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
+  ClusterOutlined ,
+  TeamOutlined,
+  FileSearchOutlined ,
+  InfoCircleOutlined,
+  BarsOutlined,
+  AuditOutlined,
+  EditOutlined ,
 } from '@ant-design/icons';
 import './index.css';
 //引入css
 import './index.css';
 import axios from "axios";
+import { useSelector } from 'react-redux'; // ✅ 引入 Redux Hook,管理侧边栏是否折叠
 //解构Layout
 const { Header, Content, Sider } = Layout;
 //接收RightList的dataSource
 function SideMenu() {
-  // 图标映射表（根据需要自行扩展）
-const iconMap = {
-  "/audit-manage": <UserOutlined />,
-  "/publish-manage": <UploadOutlined />,
-  "/audit-manage/audit": <VideoCameraOutlined />,
+  // 图标映射表
+  const iconMap = {
+     '/user-manage':<UserOutlined/>,
+    '/user-manage/list': <TeamOutlined />,
+     "/right-manage":<ClusterOutlined />,
+     '/right-manage/right/list': <BarsOutlined />,
+    '/right-manage/role/list': <BarsOutlined />,
+    //新闻
+     "/news-manage":<FileSearchOutlined />,
+     '/news-manage/add': <EditOutlined />,
+     '/news-manage/draft': <BarsOutlined />,
+     '/news-manage/category':<BarsOutlined />,
+    //审核
+        
+  "/audit-manage": <AuditOutlined />,
+   '/audit-manage/audit':<InfoCircleOutlined />,
+    '/audit-manage/list': <BarsOutlined />,
+    //发布 
+    "/publish-manage": <UploadOutlined />,
+    '/publish-manage/unpublished': <BarsOutlined />,
+    '/publish-manage/published': <BarsOutlined />,
+    '/publish-manage/sunset': <BarsOutlined />,
+    //首页
+    "/home": <HomeOutlined />,
+    //其他
   "default": <AppstoreOutlined />
 };
 
   const [menuItems, setMenuItems] = useState([]);
-  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   //获取路径名
   const pathname = useLocation().pathname;
@@ -40,7 +65,7 @@ const iconMap = {
   //获取登录的用户数据
   const token = JSON.parse(localStorage.getItem("token")) || {};
   const rights = token?.role?.rights || [];
-   
+  const collapsed = useSelector((state) => state.collapsed.value); //从全局状态读取折叠状态
 
   const checkPermission = (item) => { 
     if (item.pagepermisson === 1&&rights.includes(item.key)) { 

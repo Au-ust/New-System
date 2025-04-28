@@ -1,10 +1,9 @@
-import React,{useState,createContext} from 'react';
-import { Table ,Button,Modal,Space,Form,Switch} from 'antd';
-import { useEffect } from 'react';
-import axios from 'axios';
+import React,{useState,createContext} from 'react'
+import { Table ,Button,Modal,Space,Form,Switch} from 'antd'
+import { useEffect } from 'react'
+import axios from 'axios'
 import UserForm from '../../../components/sandbox/user-manage/UserForm'
-import { DeleteOutlined,EditOutlined, StopOutlined } from '@ant-design/icons';
-import { log } from 'three/tsl';
+import { DeleteOutlined,EditOutlined, StopOutlined } from '@ant-design/icons'
 function UserList() {
     const ReachableContext = createContext(null);
     const createConfig = (item) => {

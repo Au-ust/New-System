@@ -1,5 +1,7 @@
 
 import { Routes, Route } from "react-router-dom";
+import { Spin } from 'antd';
+import { useSelector } from 'react-redux';
 import Home from "../../views/sandbox/home/Home";
 import RightList from "../../views/sandbox/right-manage/RightList";
 import UserList from "../../views/sandbox/user-manage/UserList";
@@ -17,7 +19,9 @@ import Sunset from "../../views/sandbox/publish-manage/Sunset";
 import NewsPreview from "../../views/sandbox/news-manage/NewsPreview";
 import NewsUpdate from "../../views/sandbox/news-manage/NewsUpdate";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import http from '../../util/http'; // 引入http.jsx
+
+
 //本地i的路由映射表，根据权限映射
 const LocalRouterMap = {
     //React Router v6应该写成JSX元素，而不是组件类
@@ -42,11 +46,13 @@ const LocalRouterMap = {
 function NewsRouter() {
   const [userRoutes, setUserRoutes] = useState([]); // 存储用户有权限的路由
 
+  const Loading = useSelector(state => state.loadingReducer.value);
   useEffect(() => {
     // 1. 获取路由数据
     Promise.all([
-      axios.get('http://localhost:3000/rights'),
-      axios.get('http://localhost:3000/children')
+      //修改获取数据方式为自定义的axios:http,触发拦截器
+      http.get('http://localhost:3000/rights'),
+      http.get('http://localhost:3000/children')
     ]).then(([rightsRes, childrenRes]) => {
       // 2. 合并路由数据
       const allRoutes = [...rightsRes.data, ...childrenRes.data];
@@ -69,8 +75,9 @@ function NewsRouter() {
     });
   }, []);
 
-
-    return (
+  console.log('Loading:', Loading); // 确认此值是否变化
+  return (
+    <Spin size="large" spinning={Loading} >
         <Routes>
             {
             // 遍历路由表
@@ -80,8 +87,9 @@ function NewsRouter() {
             {/*404路由,把网速调慢可以看效果*/}
             {userRoutes.length === 0 ? <Route path='*' element={<Nopermission />} /> : null}    
                 <Route path='*' element={<Nopermission />} />
-            </Routes>
-    );
+      </Routes>
+    </Spin>
+    )
 }
 
 export default NewsRouter;

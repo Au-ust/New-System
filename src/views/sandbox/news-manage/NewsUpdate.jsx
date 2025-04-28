@@ -6,7 +6,6 @@ import NewEditor from '../../../components/news-manage/NewsEditor';
 import axios from 'axios';
 import { useNavigate , useParams} from 'react-router-dom';
 import 'antd/dist/reset.css';
-import { log } from 'three/tsl';
 
 const { Option } = Select;
 // 提取空内容判断函数

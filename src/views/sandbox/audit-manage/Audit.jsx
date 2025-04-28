@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Table, Button, Tag, notification, Space } from "antd"
+import { Table, Button, notification, Space } from "antd"
 import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom" 
 function Audit() {
@@ -8,6 +8,7 @@ function Audit() {
     const token = JSON.parse(localStorage.getItem("token")) || {};
     const roleId = token.roleId; // 直接访问 token.roleId
     const region = token.region || "";// 直接访问 token.region
+    const username = token.username || "";// 直接访问 token.username
     const isSuperAdmin = roleId === 1; // 超级管理员
     const isAdmin = roleId === 2;      // 区域管理员
     const isEditor = roleId === 3;     // 编辑
@@ -69,9 +70,11 @@ function Audit() {
             title: '新闻作者',
             dataIndex: 'author',
         }, {
-            title: '新闻分类',
-            dataIndex: 'categoryId',
-           
+           title: '新闻分类',
+            dataIndex: 'category',
+            render: (category) => {
+                return  <div>{category && category.title ? category.title : '无分类'}</div>;
+            }
         },{
             title: '操作',
             render: (item) => {

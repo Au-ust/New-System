@@ -48,6 +48,10 @@ function NewsAdd() {
         labelCol: { span: 4 },
         wrapperCol: { span: 20 },
     }
+    //对应分类和分类id
+    const selectedCategory = categoryList.find(
+  item => item.value === formInfo.categoryId
+)
     const handleSave = async (auditState) => { 
         //  console.log("handleSave 被调用了");
         console.log('author:',localStorage.getItem('username'))
@@ -59,14 +63,14 @@ function NewsAdd() {
             region: User.region?User.region: '全球', // 获取地区
             author: User.username ,// 获取作者
             roleId: User.roleId, // 获取角色ID
-            category: formInfo.categoryId, // 获取分类ID
             auditState: auditState, // 审核状态
             publishState: 0, // 发布状态
             createTime: Date.now(), // 创建时间
             star: 0, // 点赞数
             view: 0,// 浏览量
             // publishTime: 0, // 发布时间
-        } ) 
+        } 
+    ) 
            api.success({
             message: '操作成功',
             description: `已${auditState === 0 ? '保存到草稿箱' : '提交审核'}`,
@@ -76,6 +80,8 @@ function NewsAdd() {
         //延迟 500ms 再跳转，确保用户能看到通知
         setTimeout(() => {
             navigate(auditState === 0 ? '/news-manage/draft' : '/audit-manage/list');
+            console.log('formInfo.categoryId:', formInfo.categoryId);
+            
         }, 500);
         
     } catch (error) {
@@ -151,7 +157,8 @@ function NewsAdd() {
                         >
                             <Select placeholder="选择您的新闻分类" allowClear>
                                 {categoryList.map(item => (
-                                    <Option value={item.value} key={item.id}>
+                                    //这里写错了气死我了
+                                    <Option value={item.id} key={item.id}>
                                         {item.title}
                                     </Option>
                                 ))}

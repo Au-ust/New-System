@@ -83,8 +83,11 @@ function NewsDraft() {
             title: '新闻作者',
             dataIndex: 'author',
         },{
-            title: '新闻分类',
-            dataIndex: 'categoryId',
+           title: '新闻分类',
+            dataIndex: 'category',
+            render: (category) => {
+                return  <div>{category && category.title ? category.title : '无分类'}</div>;
+            }
         },{
             title: '操作',
             render: (item) => {
